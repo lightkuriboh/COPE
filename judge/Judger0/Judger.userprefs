@@ -1,0 +1,17 @@
+﻿<Properties StartupItem="Judger/Judger.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Judger/Program.cs">
+    <Files>
+      <File FileName="Judger/Program.cs" Line="52" Column="2" />
+      <File FileName="Judger/MySql.cs" Line="38" Column="4" />
+      <File FileName="Judger/Judge.cs" Line="198" Column="7" />
+      <File FileName="Judger/Compile_And_Run.cs" Line="19" Column="5" />
+      <File FileName="Judger/Classifier.cs" Line="96" Column="37" />
+      <File FileName="Judger/GlobalVariable.cs" Line="10" Column="15" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
