@@ -53,7 +53,7 @@
 	}
 
 	function query_in_server() {
-		$con = mysqli_connect('localhost', 'root', 'cottoncandy', '');
+		$con = mysqli_connect('localhost', 'root', 'Matkhaula123', '');
 		mysqli_select_db($con, 'infoDB');
 		$query = "SELECT * FROM user_infomation";
 		$user_info = mysqli_query($con, $query);
@@ -79,7 +79,7 @@
 		return true;
 	}	
 	function add_rows_to_highest_score() {
-		$con = mysqli_connect('localhost', 'root', 'cottoncandy', '');
+		$con = mysqli_connect('localhost', 'root', 'Matkhaula123', '');
 		mysqli_select_db($con, 'infoDB');
 		$query_insert_row = "
 				INSERT INTO highest_score 

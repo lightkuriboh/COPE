@@ -15,7 +15,7 @@
 				if (mysqli_query ($con, $query)) echo "Success"; else echo "Failure";    
 			} else echo "You don't have enough power!";
 		} else {
-			echo "Cannot find username!"
+			echo "Cannot find username!";
 		}
 	} else {
 		echo "Enter a username!";

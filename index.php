@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!-- <!DOCTYPE HTML> -->
 <html>
 	<title>
 		Kuriboh Kute
@@ -9,7 +9,7 @@
 		?>				
 	</head>
 	<body>				
-		<div class = "session_classes">
+		<div class="session_classes">
 			<?php
 				include("session.php");
 			?>
@@ -64,8 +64,7 @@
 										Xem lại code của mình theo từng bài bất cứ lúc nào.
 									</li>
 									<li>
-										Sort bài theo số lượng người làm được (click vào "ACs"), 
- có thể sort theo số lượng người làm được với một mục kiến thức (tags) nào đó (tìm kiếm trước rồi ấn vào "ACs" sau).
+										Sort bài theo số lượng người làm được (click vào "ACs"), có thể sort theo số lượng người làm được với một mục kiến thức (tags) nào đó (tìm kiếm trước rồi ấn vào "ACs" sau).
 									</li>
 								</ul>
 							</li>

@@ -1,5 +1,5 @@
-<?php	
-	$con = mysqli_connect('localhost', 'root', 'cottoncandy', '');
+<?php
+	$con = mysqli_connect('localhost', 'root', 'Matkhaula123', '');
 	if ($con) {
 		mysqli_select_db($con, 'infoDB');
 	}
