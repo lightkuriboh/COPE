@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<div>
+			<form id = "myForm">
+				<input id = "input" type = "text">
+				<br>
+				<button>Submit</button>
+			</form>
+		</div>
+		<script>
+			$(function() {
+				$("form#myForm").submit(function() {
+					next = $("#input").val();
+					var url = "https://www." + next + ".com.vn";
+					window.location.href = url;
+					return false;
+				});
+			});
+		</script>
+	</body>
+</html>

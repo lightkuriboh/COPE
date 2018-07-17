@@ -1,0 +1,111 @@
+<html>
+	<head>
+		<meta charset = "UTF-8"/>
+		<title>
+			Guide <!-- Title of website -->
+		</title>
+		<link type = "text/css" rel = "stylesheet" href = "look.css" media = "screen">		
+		<link type = "text/css" rel = "stylesheet" href = "gollum.css" media = "screen">		
+	</head>
+	<body style = "font-size:130%;">				
+		<div id = "main">		
+			<div id = "start">
+				<div style = "height:100%;width:100%;">
+					<div id = "lookback">
+						<div style = "height:38%; width:100%;">
+							<a href = "../../"> Home </a>
+							<a href = "../"> Library </a>
+						</div>
+						<hr> <!-- Gạch ngang trang -->
+						<div style = "height:38%; width:100%;">
+							<b style = "font-size:110%;"> <!-- Nếu cần in đậm. Nếu muốn cho font to lên, chỉnh cái 110% kia -->
+							Nguồn:
+							</b>
+							<a href =  ""> ABC <!-- Tên gọi nguồn ở đây (thay cho ABC) --> </a> <!-- Paste nguồn trong dấu ngoặc kép ở dòng này -->	
+						</div>
+					</div>
+					<div id = "title">
+						<h1>
+							This is title
+						</h1>
+					</div>		
+				</div>
+			</div>			
+			<br> <!-- Xuống dòng -->	
+			<hr>
+			<div id = "body">
+				<div id = "menu"> <!-- Menu những nội dung sẽ viết (Ý tưởng, chứng minh, code, áp dụng, ....) -->
+					<span>
+						Contents:
+					</span>
+					<hr>
+					<ul>
+						<li> 
+							<a href = "#content-one"> <!-- Đứng ngay sau dấu "#" là khu content-one khi ấn vào List one trang sẽ tự nhảy đến content-one  -->
+								List one
+							</a>
+						</li>
+						<li> 
+							<a href = "#content-two">
+								List two 
+							</a>
+						</li>					
+					</ul>
+				</div>				
+				
+				<div id = "content-one">
+					<p>
+						This is some description!
+					</p> <!-- Viết nội dung vào những chỗ như thế này, thiếu thì copy thêm -->
+				</div>	
+				<div id = "code">		
+					<pre> 
+						<code> <!-- Viết code vào đây, định dạng tab, xuống dòng, vv như viết trong ide -->
+			int main() {
+				int Kuriboh = 0;
+				return Kuriboh;
+			}
+						</code>			
+					</pre>
+				</div>
+								
+				
+				<div id = "content-two">
+					<p>
+						This is some description!
+						This is some description! <br>
+						A &#8805 B <br>
+						B &#8804 A <br>
+						&#8730A &#x2265 &#8730B <br>
+						&#8730B &#x2264 &#8730A <br>
+						C < D
+					</p>
+				</div>	
+				<div id = "code">
+					<pre>
+						<code>
+			int main() {
+				int Kuriboh = 1;
+				int A, B, C, D;
+				A = rand(); B = rand();
+				if (A <= B) return 0;
+				return Kuriboh;
+			}
+						</code>			
+					</pre>
+				</div>
+				<hr>
+			</div>
+		</div>
+	</body>
+</html>
+<!--
+	Những ký hiệu toán học có thể sẽ dùng (trong miêu tả):
+		">=": "&#8805" (greater-equal)
+		"<=": "$#8804" (less-equal)
+		căn bậc 2: &#8730
+		"oo" : &#8734 (infinity)
+		Tổng xích-ma: &#8721
+		Nếu cần thêm, tra trong:
+		https://www.w3schools.com/charsets/ref_utf_math.asp
+-->
