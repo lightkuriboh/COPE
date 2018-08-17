@@ -1,5 +1,0 @@
-/var/www/html/judge/Judger0/Judger/obj/x86/Release/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/var/www/html/judge/Judger0/Judger/bin/Release/Judger.exe.mdb
-/var/www/html/judge/Judger0/Judger/bin/Release/Judger.exe
-/var/www/html/judge/Judger0/Judger/obj/x86/Release/Judger.exe
-/var/www/html/judge/Judger0/Judger/obj/x86/Release/Judger.exe.mdb
