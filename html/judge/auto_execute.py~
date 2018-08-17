@@ -1,0 +1,371 @@
+#!/usr/bin/python3
+import glob
+import os
+import subprocess
+import time
+import sys
+from natsort import natsorted
+
+import pymysql as mysql
+
+db = mysql.connect('localhost', 'root', 'cottoncandy', 'infoDB')
+
+cursor = db.cursor()
+BASESQL = 'SELECT * FROM Running ORDER BY TimeAdd'#LIMIT 1'
+PROCESS = '/var/www/html/judge/process/'
+WORKSPACE = '/var/www/html/judge/workspace/'
+SUBMISSIONS = '/var/www/html/judge/submissions/'
+TESTCASE = '/var/www/html/judge/testcases/'
+INPUT_EXTEND = ["*.inp", "*.in", "*.INP", "*.IN", "*.Inp", "*.iNp", "*.inP", "*.INp", "*.InP", "*.iNP"]
+OUTPUT_EXTEND = ["*.ok", "*.ans", "*.ANS", "*.out", "*.OUT", "*.Out", "*.oUt", "*.ouT", "*.OUt", "*.OuT", "*.oUT"]
+NUMBER_TESTCASE = 10
+MAX_SCORE = 100
+
+
+def auto_compiler():
+
+    db = mysql.connect("localhost", "root", "cottoncandy", "infoDB")
+
+    cursor = db.cursor()
+    basesql = "SELECT * FROM Compiler LIMIT 1"
+    while True:
+        cursor.execute(basesql)
+        results = cursor.fetchall()
+        if len(results) == 0:
+            break
+
+        file_name = results[0][0]
+
+        submission_id = file_name[file_name.find('[')+1:file_name.find(']')]
+        # ub = file_name[file_name.find(']')+1:-4]
+        # username = ub[ub.find('[')+1:ub.find(']')]
+        # problem = ub[ub.rfind('[')+1:ub.rfind(']')]
+
+        # print(file_name)
+        # print('python3 /var/www/html/csponlinejudge/judge/process/compiler.py {}.cpp'.format(file_name))
+
+        os.system('python3 {}compiler.py {}'.format(PROCESS, file_name))
+        file_name = file_name[:-4]
+
+        # after compiler, INSET into Running table
+        # print("Compiled")
+        # print(os.path.isfile(file_name))
+        if os.path.isfile(SUBMISSIONS + file_name):
+            insertProb = "INSERT INTO Running (Task, TestNum) VALUES ('{}', {})" \
+                .format(file_name, 0)
+
+            cursor.execute(insertProb)
+
+            updateSubmission = "UPDATE submission SET Status='Running on test {}'" \
+                               " WHERE Submission_ID={}".format('0', submission_id)
+            cursor.execute(updateSubmission)
+            db.commit()
+        else:
+            updateSubmission = "UPDATE submissions SET Status='CE' " \
+                               "WHERE Submission_ID={}".format(submission_id)
+            cursor.execute(updateSubmission)
+            db.commit()
+
+        # exit(0)
+        # delete from database
+        sqldel = "DELETE FROM Compiler WHERE Task='{}'".format(results[0][0])
+        cursor.execute(sqldel)
+        db.commit()
+
+    db.close()
+
+
+def execute(name, mem_limit, time_limit, input_file, output_file):
+    # print(name, mem_limit, time_limit, input_file, output_file)
+    # mem_limit in mbs
+    # print(int(mem_limit) * 1024)
+    # print(input_file)
+    cmd = "su - cspoj -c \
+               'ulimit -v {}; \
+               ulimit -s 16777216; \
+               cd {}; \
+               trickle -d 0 -u 0 ./{} < {} 1> {}' " \
+        .format(int(mem_limit) * 1024, WORKSPACE, name, input_file, output_file)
+
+    # 2> /dev/null' 2> /dev/null" \
+    # print(cmd)
+
+    start_time = time.time()
+    proc = subprocess.Popen([cmd], shell=True, preexec_fn=os.setsid)
+    # time_limit in ms
+    try:
+        proc.communicate(timeout=(float(time_limit) / 1000))
+        exit_code = proc.returncode
+    except subprocess.TimeoutExpired:
+        exit_code = 124
+
+    end_time = time.time()
+    time_diff = end_time - start_time
+
+    os.system('sudo -S pkill -u cspoj')# > /dev/null 2>&1')
+    return [str(exit_code), str(time_diff)]
+
+
+def parse_str(s):
+    res = ['', '']
+    id_sb = -1
+
+    for c in s:
+        if c == '[':
+            id_sb += 1
+        elif c == ']':
+            pass
+        else:
+            res[id_sb] += c
+        if id_sb == 2:
+            break
+
+    return res
+
+
+def convert_exit_code(t):
+    t = int(t)
+    if t == 124:
+        return "TLE"
+        # timetaken = run["timelimit"]
+        # kill(codefilename,run["language"])
+        # file_write('env/error.txt', "Time Limit Exceeded - Process killed.")
+    elif t == 139:
+        return "SIGSEGV"
+        # file_write('env/error.txt', 'SIGSEGV||Segmentation fault (core dumped)\n' + file_read("env/error.txt"))
+        # timetaken = timediff
+    elif t == 136:
+        return "SIGFPE"
+        # file_write('env/error.txt', 'SIGFPE||Floating point exception\n' + file_read("env/error.txt"))
+        # timetaken = timediff
+    elif t == 134:
+        return "SIGABRT"
+        # file_write('env/error.txt', 'SIGABRT||Aborted\n' + file_read("env/error.txt"))
+        # timetaken = timediff
+    elif t != 0:
+        return "NZEC"
+        # file_write('env/error.txt', 'NZEC||return code : ' + str(t) + "\n" + file_read("env/error.txt"))
+        # timetaken = timediff
+    else:
+        return "AC"
+        # timetaken = timediff
+
+
+def get_testcase(prob_name, test_num, format):
+
+    all_file = os.listdir(TESTCASE + prob_name + '/')
+    all_test = []
+    input_file = ''
+    output_file = ''
+
+    if format == 'themis':
+        for file in all_file:
+            if os.path.isdir(TESTCASE + prob_name + '/' + file):
+                all_test.append(file)
+
+        all_test = natsorted(all_test)
+        os.chdir(TESTCASE + prob_name + '/' + all_test[test_num] + '/')
+        # print(os.getcwd())
+    elif format == 'cms':
+        os.chdir(TESTCASE + prob_name + '/')
+
+    for extend in INPUT_EXTEND:
+        if glob.glob(extend):
+            input_file = glob.glob(extend)
+
+    for extend in OUTPUT_EXTEND:
+        if glob.glob(extend):
+            output_file = glob.glob(extend)
+
+    if format == 'themis':
+        input_file = input_file[0]
+        output_file = output_file[0]
+    elif format == 'cms':
+        input_file = natsorted(input_file)
+        output_file = natsorted(output_file)
+        input_file = input_file[test_num]
+        output_file = output_file[test_num]
+
+    if input_file == '' or output_file == '':
+        print("No such testcase, please add extension")
+
+    input_file = os.getcwd() + '/' + input_file
+    output_file = os.getcwd() + '/' + output_file
+
+    input_file = '"' + input_file + '"'
+    output_file = '"' + output_file + '"'
+
+    input_file = input_file.replace('$', '\$')
+    output_file = output_file.replace('$', '\$')
+    return [input_file, output_file]
+
+
+def process():
+    start_time = time.time()
+    while True:
+        cursor.execute(BASESQL)
+        ret = cursor.fetchall()
+        if len(ret) == 0:
+            break
+        for x in range(len(ret)):
+            results = ret[x]
+            task = results[0]
+            test_num = int(results[1])
+
+            submission_id, username = parse_str(task)
+            prob_name = task[task.rfind('[') + 1:task.rfind(']')]
+
+            sql_prob = "SELECT * FROM problems_info WHERE ID='{}'".format(prob_name)
+            cursor.execute(sql_prob)
+            prob_info = cursor.fetchall()[0]
+
+            sql = "UPDATE submission SET Status='Running on test {}'" \
+                  " WHERE Submission_ID={}".format(test_num + 1, submission_id)
+            cursor.execute(sql)
+
+            input_file, output_file = get_testcase(prob_name, test_num, 'cms')
+            user_output = WORKSPACE + prob_name + '.out'
+
+            os.chdir(WORKSPACE)
+            os.system('rm {}.inp > /dev/null 2>&1'.format(prob_name))
+
+            os.system('cp {} {}'.format(SUBMISSIONS + task, WORKSPACE))
+            # os.system('cp {} {}'.format(input_file, WORKSPACE + prob_name + '.inp'))
+
+            log = execute(task, prob_info[5], prob_info[4],
+                          input_file, user_output)
+            log[0] = convert_exit_code(log[0])
+            print(log)
+            # log = exitcode, timedifff
+
+            cmd = '{}./diff_cp {} {}'\
+                .format(PROCESS, user_output, output_file)
+            # print(cmd)
+
+            # checker
+            # print (user_output)
+            if not os.path.getsize(user_output):
+                # for text file
+                print ('no output')
+                os.system('cp -f {} {}'.format(task, user_output))
+            accepted = False
+            if os.path.isfile(TESTCASE + prob_info[0] + '/' + 'checker'):
+
+                cmd_checker = TESTCASE + prob_info[0] + '/' + './checker < {}'.format(user_output)
+                # print (cmd_checker)
+                if not os.system(cmd_checker):
+                    accepted = True
+                # sys.exit();
+            elif log[0] == 'AC' and not os.system(cmd):
+                accepted = True
+
+            if accepted:
+                print("Accepted")
+                # true
+                sql = "UPDATE submission SET Score=Score+{} WHERE Submission_ID={}" \
+                    .format(MAX_SCORE / NUMBER_TESTCASE, submission_id)
+                cursor.execute(sql)
+                sql = "UPDATE submission SET Time=GREATEST(Time, {}) WHERE Submission_ID={}" \
+                    .format(log[1], submission_id)
+                cursor.execute(sql)
+                log[0] = 'AC'
+            else:
+                sql = "UPDATE submission SET Time=GREATEST(Time, {}) WHERE Submission_ID={}" \
+                    .format(log[1], submission_id)
+                cursor.execute(sql)
+                if log[0] == 'AC':
+                    log[0] = 'WA'
+                print("Wrong answer")
+
+            # delete compiled file in workspace
+            os.system('rm {} > /dev/null 2>&1'.format(task))
+
+            # delete user output
+            os.system('rm -f {} > /dev/null 2>&1'.format(user_output))
+
+            # delete running
+            sql = "DELETE FROM Running WHERE Task='{}'".format(task)
+            cursor.execute(sql)
+
+            # Insert into InfoSubmission
+            sql = "INSERT INTO InfoSubmission (SubmissionID, Testcase, Status, Score, TimeRunning)"\
+                "VALUES ({}, {}, '{}', {}, {})"\
+                .format(submission_id, test_num, log[0], MAX_SCORE / NUMBER_TESTCASE if log[0] == 'AC' else 0, float(log[1]))
+            cursor.execute(sql)
+
+            if test_num != NUMBER_TESTCASE - 1:
+                sql = "INSERT INTO Running (Task, TestNum) VALUES ('{}', {})"\
+                        .format(task, test_num+1)
+                cursor.execute(sql)
+
+            else:
+                # last test
+                #sql = "UPDATE Problems SET Submission=Submission+1 WHERE ProblemNAME='{}'"\
+                #    .format(prob_name)
+                #cursor.execute(sql)
+
+                sql = "SELECT Score FROM submission WHERE Submission_ID={}".format(submission_id)
+                cursor.execute(sql)
+                score = cursor.fetchall()[0][0]
+
+                # convert score float to int for check
+                if round(score) == round(MAX_SCORE):
+                    #sql = "UPDATE Problems SET FullScore=FullScore+1 WHERE ProblemNAME='{}'"\
+                    #    .format(prob_name)
+                    #cursor.execute(sql)
+                    status = "AC"
+                    score = MAX_SCORE
+                    sql = "UPDATE submission SET Score={} WHERE Submission_ID={}" \
+                        .format(MAX_SCORE, submission_id)
+                    cursor.execute(sql)
+                else:
+                    status = "WA"
+
+                sql = "UPDATE submission SET Status='{}' WHERE Submission_ID={}".format(status, submission_id)
+                cursor.execute(sql)
+
+                # update Maxscore
+                #sql = "SELECT Score FROM Maxscore WHERE Username='{}' AND Problem='{}'"\
+                #    .format(username, prob_name)
+		sql = "SELECT " + prob_name + "FROM highest_score WHERE User='" + username + "'"
+                cursor.execute(sql)
+                response = cursor.fetchall()
+		if response is None:
+		else:
+		    if score > response[0][0]:
+			sql = "UPDATE highest_score SET " + prob_name + "=" + score + " WHERE User = '" + username + "'"
+			cursor.execute(sql)
+                #if not len(response):
+                    #sql = "INSERT INTO Maxscore (Username, Problem, Score) VALUES ('{}', '{}', {})"\
+                    #    .format(username, prob_name, score)
+                    #cursor.execute(sql)
+
+                    #sql = "UPDATE Users SET Score=Score+{} WHERE Username='{}'" \
+                    #    .format(score, username)
+                    #cursor.execute(sql)
+                #else:
+                    # score last submission = response[0][0]
+                    # if score > response[0][0]:
+                        #sql = "UPDATE Users SET Score=Score+{} WHERE Username='{}'"\
+                        #    .format(score - response[0][0], username)
+                        #cursor.execute(sql)
+
+                        #sql = "UPDATE Maxscore SET Score={} WHERE Username='{}' AND Problem='{}'"\
+                        #    .format(score, username, prob_name)
+                        #cursor.execute(sql)
+
+                db.commit()
+
+            end_time = time.time()
+            if end_time - start_time > 2.0:
+                db.commit()
+                end_time = start_time
+
+    db.commit()
+
+if __name__ == '__main__':
+    print("Starting...")
+    while True:
+        auto_compiler()
+        process()
+	time.sleep(2)
