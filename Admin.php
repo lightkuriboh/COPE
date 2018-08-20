@@ -15,7 +15,7 @@
 			?>
 		</div>
 		<div id = "main_block">
-			<div class="container-fluid" style="height:40px;">
+			<div class="container-fluid" style="height:60px;">
 				<?php
 					include("logo.php");
 				?>		

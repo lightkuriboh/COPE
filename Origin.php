@@ -33,6 +33,9 @@
 					echo "<a href = '/Admin'>Admin</a>";			
 					echo "</li>";		}
 			?>
+			<li>
+				<a href = '/About'>About</a>
+			</li>
 		</ul>	
 	
 </nav>

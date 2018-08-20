@@ -1,33 +1,12 @@
-html {
-	margin: 0;
-	padding: 0;
-}
+
 body {
 	background-color:#f4f4f4;
-	margin: 0px;
-	padding: 0px;
 }
 	
 #menustyle {
 	border:1px solid black;
 }
 
-ul#menu li {
-	display:inline;	
-	font-family: palatino;
-	font-size: 120%;
-	font-weight: 900;
-}
-ul#menu li a {
-	color:white;
-	padding: 10px 30px; 
-}
-li {
-	list-style-type: square;
-}
-ul.pagination {
-	text-align: center;
-}
 #main_block {
 	width: 100%;
 	height: 1500px;
@@ -36,35 +15,8 @@ ul.pagination {
 	max-height: 1500px;
 	min-height: 10px;
 	padding: 1em;
-	/*border-left: 3px solid #B5A8F7;*/
-	/*border-right: 3px solid #B5A8F7;*/
-	border-radius: 20px;
-	margin: 0;
-	position: relative;
-	/* background-color: #EAFAF1;*/
 }
-#header {
-	margin: 5px auto;
 
-	width: 100%;
-	height: 3%;
-}
-#nav {
-	border-radius: 10px;
-	/*border-top: 8px solid #a6fa8e;*/
-	/*border-bottom: 8px solid #a6fa8e;*/
-	float: left;
-	width: 100%;
-	height: 5%;
-	max-width: 1500px;
-	min-width: 120px;	
-	max-height: 5000px;
-	min-height: 10px;
-	padding: 1.8%;
-	margin: 10px auto;
-	background-color: #92B6D5;
-	color:white;
-}
 #main {	
 	width: 90%;
 	height: 65%;
@@ -85,7 +37,7 @@ ul.pagination {
 	max-height: 5000px;
 	min-height: 10px;
 }
-
+/*
 #footer {
 	float: left;
 	width: 80%;
@@ -99,6 +51,7 @@ ul.pagination {
     transform: translateX(-50%) translateY(-40%);
 	border-radius: 100px;
 }
+*/
 section {
 	width:75%;
 	float: left;
@@ -114,29 +67,14 @@ aside {
 	padding:5px;
 	text-align:center;
 }
-#table_list {
-	width: 100%;
-	height: 100%;
-	max-width: 2000px;
-	min-width: 20px;	
-	max-height: 250px;
-	min-height: 10px;	
-	text-align: center;
-	margin: 5px auto;
-}
-td td, th th, th td, td th { 
-	font-size: 100%;
-	text-align: center;
-}
-p {	
-	color:blue;
-}
+
+
 tr:hover {background-color:pink;}
 tr, th, td {
-    text-align: center;
+    	text-align: center;
 	max-height: 20px;
 	min-height: 10px;
-    border-bottom: 1px solid #ddd;
+    	border-bottom: 1px solid #ddd;
 }
 img#status {
 	width:15px;

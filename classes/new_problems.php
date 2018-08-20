@@ -29,7 +29,7 @@
 					echo "";
 			}
 		}
-		echo "<a href = '/problems/".$ar[$i]['ID']."'><button class = 'btn btn-link'>".$ar[$i]['ID']."</button></a><br>";
+		echo "<a href = '/problems/".$ar[$i]['ID']."'>".$ar[$i]['ID']."</a><br>";
 		echo "</td></tr>";
 	}
 ?>

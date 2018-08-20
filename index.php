@@ -92,7 +92,7 @@
 								New Problems
 							</div>
 							<div class = "panel-body">
-								<table id = "table_list">
+								<table class="table table-bordered">
 									<?php
 										include("classes/new_problems.php");
 									?>

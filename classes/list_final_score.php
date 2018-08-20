@@ -66,7 +66,7 @@
 				break;
 			}
 		for ($i = ($page - 1) * 20; $i < min($size, $page * 20); $i++) {
-			echo "<tr style = 'color:blue;'>";
+			echo "<tr>";
 			echo "<td>";
 			//echo "<a href = 'profile.php?username=".$ar[$i][0]."'>".$ar[$i][0] . "</a>";
 			if ($ar[$i][4] === $king) echo "<img id = 'status' src = '/img/king.jpg'></img> "; else
