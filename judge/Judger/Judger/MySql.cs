@@ -10,7 +10,7 @@ namespace Judger
 		public void open_connection() {
 			try {
 				string ConnectString = "Server=localhost;Database=infoDB;" +
-										"User ID=root;Password=cottoncandy;" +
+										"User ID=root;Password=password;" +
 										"Pooling=false";
 				connection = new MySqlConnection (ConnectString);
 				connection.Open ();
